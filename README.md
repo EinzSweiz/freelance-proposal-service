@@ -1,58 +1,58 @@
 # 📜 Proposal Service
 
-`ProposalService` — это микросервис для создания, обновления и получения предложений (от фрилансеров) для проектов на платформе. Он является частью микросервисной архитектуры, общается с другими сервисами по gRPC, публикует события в Kafka и работает с PostgreSQL в асинхронном режиме.
+`ProposalService` is a microservice responsible for creating, updating, and retrieving freelancer proposals for projects on a platform. It is part of a microservice architecture, communicates with other services via gRPC, publishes events to Kafka, and interacts with PostgreSQL using async SQLAlchemy.
 
 ---
 
-## 📆 Стек технологий
+## 📆 Tech Stack
 
 * **Python 3.11**
-* **FastAPI** — REST API (async)
+* **FastAPI** — Async REST API
 * **SQLAlchemy 2.0 (async) + Alembic**
 * **PostgreSQL**
-* **gRPC (aio)** — клиент к ProjectService
+* **gRPC (aio)** — Client to ProjectService
 * **Kafka (confluent-kafka)**
 * **Docker + Docker Compose**
-* **Domain-Driven Design (DDD)** + слоистая архитектура
+* **Domain-Driven Design (DDD)** + Layered Architecture
 
 ---
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```
 app/
-├── domain/                  # Сущности, абстракции
-├── infrastructure/         # Реализации: DB, Kafka, gRPC, logging, security
-├── services/               # Бизнес-логика
-├── presentation/           # HTTP API (FastAPI)
-├── proto/                  # gRPC протоколы
-├── generated/              # Сгенерированные protobuf
-├── config/                 # Kafka/Переменные окружения
-├── cmd/                    # Точка входа
-├── test/                   # Заготовки для unit-тестов
-alembic/                    # Миграции базы
+├── domain/                  # Entities and interfaces
+├── infrastructure/         # DB, Kafka, gRPC, logging, security implementations
+├── services/               # Business logic layer
+├── presentation/           # HTTP API layer (FastAPI)
+├── proto/                  # gRPC protocol definitions
+├── generated/              # Generated protobuf files
+├── config/                 # Kafka & environment settings
+├── cmd/                    # Application entrypoint
+├── test/                   # Unit test scaffolding
+alembic/                    # Database migrations
 ```
 
 ---
 
-## 🚀 Функциональность
+## 🚀 Functionality
 
 ### 🔧 REST API (FastAPI)
 
-| Method  | Endpoint                  | Description                 |
-| ------- | ------------------------- | --------------------------- |
-| `POST`  | `/proposals/`             | Создание предложения        |
-| `PATCH` | `/proposals/{id}`         | Обновить статус             |
-| `GET`   | `/proposals/{id}`         | Получить предложение        |
-| `GET`   | `/proposals/project/{id}` | Все предложения для проекта |
+| Method  | Endpoint                  | Description                   |
+| ------- | ------------------------- | ----------------------------- |
+| `POST`  | `/proposals/`             | Create a proposal             |
+| `PATCH` | `/proposals/{id}`         | Update proposal status        |
+| `GET`   | `/proposals/{id}`         | Retrieve a single proposal    |
+| `GET`   | `/proposals/project/{id}` | Get all proposals for project |
 
-### 📱 gRPC-клиент
+### 📱 gRPC Client
 
-* При создании proposal делается gRPC-вызов в **ProjectService**, чтобы проверить существование проекта.
+* When creating a proposal, a gRPC call is made to **ProjectService** to validate the project ID.
 
 ### 📨 Kafka Events
 
-* Публикация события `proposal.created`:
+* After successful proposal creation, a `proposal.created` event is published:
 
 ```json
 {
@@ -66,14 +66,14 @@ alembic/                    # Миграции базы
 
 ---
 
-## 📆 Запуск
+## 📆 Getting Started
 
-### 🔗 Зависимости:
+### 🔗 Prerequisites
 
 * Docker
 * Docker Compose
 
-### 📄 .env (app/.env)
+### 📄 .env File (app/.env)
 
 ```env
 DATABASE_URL=postgresql+asyncpg://postgres:postgres@proposal_db:5432/proposals_db
@@ -83,25 +83,25 @@ PROJECT_GRPC_HOST=grpc_server
 PROJECT_GRPC_PORT=50051
 ```
 
-### 🚀 Запуск из root-папки проекта:
+### 🚀 Start the Service (from root directory)
 
 ```bash
-# Сборка
+# Build the services
 make build
 
-# Старт
+# Start the services
 make up
 
-# Логи
+# View logs
 make logs
 
-# Миграции
+# Run migrations
 make migrate
 ```
 
 ---
 
-## ✅ Пример запроса
+## ✅ Example Request
 
 ```http
 POST /proposals/
@@ -109,7 +109,7 @@ Content-Type: application/json
 
 {
   "project_id": "uuid",
-  "message": "Готов взяться за проект",
+  "message": "I'm ready to take on this project",
   "price": 1500.0,
   "estimated_days": 10
 }
@@ -117,11 +117,11 @@ Content-Type: application/json
 
 ---
 
-## 📊 Архитектурные особенности
+## 📊 Architecture Notes
 
-* **DDD**: разделение domain / service / infra / presentation
-* **Kafka**: producer с lifecycle подходом
-* **gRPC**: lazy клиент (`await self.init()`)
-* **PostgreSQL**: asyncpg + SQLAlchemy 2.0 + Alembic
+* **DDD**: Clear separation of domain / service / infrastructure / presentation
+* **Kafka**: Pluggable producer with lifecycle integration
+* **gRPC**: Lazy client initialization (`await self.init()`)
+* **PostgreSQL**: asyncpg + SQLAlchemy 2.0 + Alembic for migrations
 
 ---
