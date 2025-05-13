@@ -1,0 +1,26 @@
+# --- Core ---
+fastapi                         # API framework
+uvicorn[standard]               # ASGI-сервер с автоперезапуском
+pydantic                        # Схемы, валидация
+python-dotenv                   # .env support
+
+# --- Security ---
+python-jose[cryptography]      # JWT-декодинг и подпись
+
+# --- Database: PostgreSQL ---
+asyncpg                         # Async PostgreSQL драйвер
+sqlalchemy[asyncio]             # Async ORM
+alembic                         # Миграции
+psycopg2-binary                 # Для Alembic CLI
+
+# --- Kafka ---
+aiokafka                        # Async Kafka producer (и future consumer)
+
+# --- gRPC ---
+grpcio                          # gRPC client runtime
+grpcio-tools                    # Компиляция .proto файлов
+
+# --- Testing ---
+pytest                          # Тестирование
+pytest-asyncio                  # Async тесты
+httpx                           # Async HTTP клиент для тестов

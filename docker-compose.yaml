@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  proposal_app:
+    build: .
+    container_name: proposal_service_app
+    ports:
+      - "8002:8000"
+    depends_on:
+      - proposal_db
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@proposal_db:5432/proposals_db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - PROJECT_GRPC_HOST=grpc_server
+      - PROJECT_GRPC_PORT=50051
+    env_file:
+      - app/.env
+    volumes:
+      - .:/app
+    networks:
+      - config
+
+  proposal_db:
+    image: postgres:14
+    container_name: proposal_service_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: proposals_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - pgdata_proposal:/var/lib/postgresql/data
+    networks:
+      - config
+
+volumes:
+  pgdata_proposal:
+
+networks:
+  config:
+    external: true

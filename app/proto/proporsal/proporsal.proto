@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package project;
+
+// gRPC-сервис для получения информации о проекте
+service ProjectService {
+  // Получить проект по его ID
+  rpc GetProjectById (GetProjectRequest) returns (ProjectResponse);
+}
+
+// Запрос — содержит ID проекта
+message GetProjectRequest {
+  string project_id = 1;
+}
+
+// Ответ — включает ID проекта, ID клиента и статус проекта
+message ProjectResponse {
+  string project_id = 1;
+  string client_id = 2;
+  string status = 3;
+}
