@@ -82,6 +82,7 @@ class ProposalService:
             topic=KAFKA_TOPICS["proposal_updated"],
             event={
                 "proposal_id": str(proposal.id),
+                "freelancer_id": str(proposal.freelancer_id),
                 "new_status": new_status.value,
                 "timestamp": datetime.now().isoformat()
             }
